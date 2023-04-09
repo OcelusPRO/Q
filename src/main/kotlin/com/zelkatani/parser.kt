@@ -3,9 +3,9 @@ package com.zelkatani
 import com.zelkatani.Instruction.*
 import com.zelkatani.LabeledInstruction.*
 import java.io.OutputStream
-import com.zelkatani.Token.LINEFEED as LF
-import com.zelkatani.Token.SPACE as S
-import com.zelkatani.Token.TAB as T
+import com.zelkatani.Token.KU as LF
+import com.zelkatani.Token.q as S
+import com.zelkatani.Token.Q as T
 
 class Parser(private val out: OutputStream = System.out) {
 
@@ -226,7 +226,7 @@ data class Label(private val id: Int, val stringForm: String) {
     override fun toString() = buildString {
         append("label $id:\n")
         _instructions.forEach {
-            appendln("\t$it")
+            appendln("Q$it")
         }
     }
 
@@ -237,30 +237,30 @@ sealed class Instruction(private val shorthand: String, val stringForm: String) 
 
     // Stack Manipulation
     class PushNumberInstruction(val number: Int) : Instruction("push $number", "  ${number.toWhitespace()}")
-    class DuplicateInstruction : Instruction("dup", " \n ")
-    class SwapInstruction : Instruction("swap", " \n\t")
-    class DiscardInstruction : Instruction("discard", " \n\n")
+    class DuplicateInstruction : Instruction("dup", "q\nq")
+    class SwapInstruction : Instruction("swap", "q\nQ")
+    class DiscardInstruction : Instruction("discard", "q\n\n")
 
     // Arithmetic
-    class AdditionInstruction : Instruction("add", "\t   ")
-    class SubtractionInstruction : Instruction("sub", "\t  \t")
-    class MultiplicationInstruction : Instruction("mul", "\t  \n")
-    class IntDivisionInstruction : Instruction("div", "\t \t ")
-    class ModuloInstruction : Instruction("mod", "\t \t\t")
+    class AdditionInstruction : Instruction("add", "Qqqq")
+    class SubtractionInstruction : Instruction("sub", "QqqQ")
+    class MultiplicationInstruction : Instruction("mul", "Qqq\n")
+    class IntDivisionInstruction : Instruction("div", "QqQq")
+    class ModuloInstruction : Instruction("mod", "QqQQ")
 
     // Heap Access
-    class StoreInstruction : Instruction("store", "\t\t ")
-    class RetrieveInstruction : Instruction("retrieve", "\t\t\t")
+    class StoreInstruction : Instruction("store", "QQq")
+    class RetrieveInstruction : Instruction("retrieve", "QQQ")
 
     // Flow control, the rest of it is inside LabeledInstruction
-    class EndSubroutineInstruction : Instruction("return", "\n\t\n")
+    class EndSubroutineInstruction : Instruction("return", "\nQ\n")
     class EndProgramInstruction : Instruction("end", "\n\n\n")
 
     // I/O
-    class PrintCharInstruction : Instruction("printchar", "\t\n  ")
-    class PrintNumberInstruction : Instruction("printnum", "\t\n \t")
-    class ReadCharInstruction : Instruction("readchar", "\t\n\t ")
-    class ReadNumberInstruction : Instruction("readnum", "\t\n\t\t")
+    class PrintCharInstruction : Instruction("printchar", "Q\nqq")
+    class PrintNumberInstruction : Instruction("printnum", "Q\nqQ")
+    class ReadCharInstruction : Instruction("readchar", "Q\nQq")
+    class ReadNumberInstruction : Instruction("readnum", "Q\nQQ")
 
     override fun toString() = shorthand
 }
@@ -272,19 +272,19 @@ sealed class LabeledInstruction(
         stringForm: String
 ) : Instruction(shorthand, stringForm + labelId.toWhitespace()) {
 
-    internal class MarkLocationInstruction(labelId: Int) : LabeledInstruction(labelId, "$labelId:", "\n  ")
-    class CallSubroutineInstruction(labelId: Int) : LabeledInstruction(labelId, "call $labelId", "\n \t")
-    class JumpInstruction(labelId: Int) : LabeledInstruction(labelId, "jump $labelId", "\n \n")
-    class JumpZeroInstruction(labelId: Int) : LabeledInstruction(labelId, "jumpzero $labelId", "\n\t ")
-    class JumpNegativeInstruction(labelId: Int) : LabeledInstruction(labelId, "jumpneg $labelId", "\n\t\t")
+    internal class MarkLocationInstruction(labelId: Int) : LabeledInstruction(labelId, "$labelId:", "\nqq")
+    class CallSubroutineInstruction(labelId: Int) : LabeledInstruction(labelId, "call $labelId", "\nqQ")
+    class JumpInstruction(labelId: Int) : LabeledInstruction(labelId, "jump $labelId", "\nq\n")
+    class JumpZeroInstruction(labelId: Int) : LabeledInstruction(labelId, "jumpzero $labelId", "\nQq")
+    class JumpNegativeInstruction(labelId: Int) : LabeledInstruction(labelId, "jumpneg $labelId", "\nQQ")
 }
 
 class ParserException(override val message: String = "Error parsing program.") : Exception(message)
 
 fun Int.toWhitespace() = buildString {
     val value = this@toWhitespace
-    append(if (value < 0) '\t' else ' ')
+    append(if (value < 0) 'Q' else 'q')
     val asString = Integer.toBinaryString(value)
     // Doing appendln doesn't work.
-    append(asString.replace('1', '\t').replace('0', ' ')).append('\n')
+    append(asString.replace('1', 'Q').replace('0', 'q')).append('\n')
 }

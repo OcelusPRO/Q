@@ -4,7 +4,7 @@ import com.zelkatani.Token.*
 import java.io.File
 
 enum class Token {
-    SPACE, TAB, LINEFEED
+    q, Q, KU
 }
 
 class Lexer {
@@ -13,9 +13,9 @@ class Lexer {
 
         text.forEach {
             when (it) {
-                ' ' -> lexed.add(SPACE)
-                '\t' -> lexed.add(TAB)
-                '\n' -> lexed.add(LINEFEED)
+                'q' -> lexed.add(q)
+                'Q' -> lexed.add(Q)
+                '\n' -> lexed.add(KU)
             }
         }
 

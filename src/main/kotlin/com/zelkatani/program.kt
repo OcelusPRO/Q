@@ -6,9 +6,9 @@ import com.zelkatani.ProgramBuilder.InstructionBuilder
 import java.io.File
 import java.io.OutputStream
 import java.util.*
-import com.zelkatani.Token.LINEFEED as LF
-import com.zelkatani.Token.SPACE as S
-import com.zelkatani.Token.TAB as T
+import com.zelkatani.Token.KU as LF
+import com.zelkatani.Token.q as S
+import com.zelkatani.Token.Q as T
 
 class Program(
         val instructions: List<Instruction>,
@@ -125,7 +125,7 @@ class Program(
 
                 is ReadNumberInstruction -> {
                     val address = stack.pop()
-                    val num = readLine()!!.split(' ').map(String::toInt)[0]
+                    val num = readLine()!!.split('q').map(String::toInt)[0]
                     heap[address] = num
                 }
             }
