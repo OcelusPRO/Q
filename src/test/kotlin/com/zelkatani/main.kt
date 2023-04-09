@@ -31,7 +31,7 @@ internal class MainTest {
 
     private fun getWSFile(name: String): File {
         val classLoader = javaClass.classLoader
-        return File(classLoader.getResource("$name.ws").file)
+        return File(classLoader.getResource("$name.q").file)
     }
 
     @Test
@@ -78,7 +78,7 @@ internal class MainTest {
         val program = parser parse lexed
         val builder = ProgramBuilder(program)
 
-        val tempFile = File.createTempFile("space-", ".ws")
+        val tempFile = File.createTempFile("space-", ".q")
         builder.exportToFile(tempFile.absolutePath)
 
         val exportLexed = lexer lex tempFile
@@ -139,26 +139,26 @@ internal class MainTest {
     @Test
     fun `Test Program to Whitespace`() {
         val stringProgram = "    \n" +  // push 0
-                "   \t    \t\n" +       // push 33
-                "   \t\t  \t  \n" +     // push 100
-                "   \t\t \t\t  \n" +    // push 108
-                "   \t\t\t  \t \n" +    // push 114
-                "   \t\t \t\t\t\t\n" +  // push 111
-                "   \t\t\t \t\t\t\n" +  // push 119
-                "   \t     \n" +        // push 32
-                "   \t\t \t\t\t\t\n" +  // push 111
-                "   \t\t \t\t  \n" +    // push 108
-                "   \t\t \t\t  \n" +    // push 108
-                "   \t\t  \t \t\n" +    // push 101
-                "   \t  \t   \n" +      // push 72
-                "\n \t  \n" +   // call label 0
-                "\n    \n" +    // define label 0
-                " \n " +        // duplicate
-                "\n\t  \t\n" +  // if zero jump to label 1
-                "\t\n  " +      // print char
-                "\n \t  \n" +   // jump to label 0
-                "\n   \t\n" +   // define label 1
-                " \n\n" +   // discard
+                "qqqQqqqqQ\n" +       // push 33
+                "qqqQQqqQqq\n" +     // push 100
+                "qqqQQqQQqq\n" +    // push 108
+                "qqqQQQqqQq\n" +    // push 114
+                "qqqQQqQQQQ\n" +  // push 111
+                "qqqQQQqQQQ\n" +  // push 119
+                "qqqQqqqqq\n" +        // push 32
+                "qqqQQqQQQQ\n" +  // push 111
+                "qqqQQqQQqq\n" +    // push 108
+                "qqqQQqQQqq\n" +    // push 108
+                "qqqQQqqQqQ\n" +    // push 101
+                "qqqQqqQqqq\n" +      // push 72
+                "\nqQqq\n" +   // call label 0
+                "\nqqqq\n" +    // define label 0
+                "q\nq" +        // duplicate
+                "\nQqqQ\n" +  // if zero jump to label 1
+                "Q\nqq" +      // print char
+                "\nqQqq\n" +   // jump to label 0
+                "\nqqqQ\n" +   // define label 1
+                "q\n\n" +   // discard
                 "\n\n\n"    // end program
 
         val lexed = lexer lex stringProgram
@@ -228,7 +228,7 @@ internal class MainTest {
         assertEquals(expect, outputStream.toString())
     }
 
-    private fun String.toVisible() = replace(' ', 'S').replace('\t', 'T').replace("\n", "L\n")
+    private fun String.toVisible() = replace('q', 'S').replace('Q', 'T').replace("\n", "L\n")
     private fun Int.toVisibleWhitespace() = toWhitespace().toVisible()
 
     @Test
